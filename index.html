@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Web Bazar - Pro Code Manager</title>
+    <!-- Font Awesome 6 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <!-- Google Fonts: Inter + Fira Code -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #ffffff;
+            color: #111111;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Header --- */
+        .top-header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .logo i {
+            color: #2563eb;
+        }
+        .file-trigger {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 40px;
+            padding: 0.4rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #0f172a;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .auth-section {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .auth-btn {
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: 1.5px solid transparent;
+            white-space: nowrap;
+        }
+        .login-btn {
+            background: white;
+            border-color: #cbd5e1;
+            color: #1e293b;
+        }
+        .signup-btn {
+            background: #22c55e;
+            color: white;
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f1f5f9;
+            padding: 0.2rem 0.8rem 0.2rem 0.3rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+        }
+        .user-profile i {
+            font-size: 1.5rem;
+            color: #2563eb;
+        }
+        .logout-btn {
+            background: transparent;
+            border: 1px solid #cbd5e1;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        /* --- Main App --- */
+        .app-main {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            background: #fafbfc;
+        }
+
+        /* Left Panel */
+        .browser-panel {
+            width: 100%;
+            max-width: 360px;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            transition: 0.2s;
+            overflow: hidden;
+            position: absolute;
+            height: 100%;
+            z-index: 100;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+        }
+        @media (min-width: 768px) {
+            .browser-panel {
+                position: relative;
+                display: flex !important;
+            }
+        }
+        .panel-header {
+            padding: 1rem;
+            border-bottom: 1px solid #edf2f7;
+        }
+        .search-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 40px;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0.5rem 0;
+        }
+        .search-box input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .file-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+        .file-item {
+            background: #f9f9fc;
+            border: 1px solid #eef2f6;
+            border-radius: 18px;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .file-item.active {
+            background: #e6f0ff;
+            border-left: 4px solid #2563eb;
+        }
+        .file-name {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .project-count {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        /* Right Workspace */
+        .project-workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            overflow-y: auto;
+            padding: 0.8rem;
+        }
+        .action-bar {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .big-btn {
+            flex: 1;
+            min-width: 140px;
+            background: white;
+            border: 1.5px solid #dde3ea;
+            border-radius: 60px;
+            padding: 0.7rem 1rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        .big-btn-primary {
+            background: #22c55e;
+            border-color: #22c55e;
+            color: white;
+        }
+        
+        /* File Selector Area */
+        .file-selector-area {
+            background: #f8fafc;
+            border-radius: 32px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        .project-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 0.8rem;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .project-card {
+            background: #f1f5f9;
+            border: 1px solid #d1d9e6;
+            border-radius: 40px;
+            padding: 0.6rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            cursor: pointer;
+        }
+        .project-card:hover {
+            background: #e6f0ff;
+        }
+
+        .editor-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .toggle-buttons {
+            display: flex;
+            gap: 0.5rem;
+            background: #f1f5f9;
+            padding: 0.3rem;
+            border-radius: 60px;
+            margin: 0.5rem 0;
+        }
+        .toggle-btn {
+            flex: 1;
+            padding: 0.6rem 0.5rem;
+            border-radius: 40px;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #475569;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: 0.2s;
+        }
+        .toggle-btn.active {
+            background: white;
+            color: #22c55e;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .button-row {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            flex: 1 1 auto;
+        }
+        .btn-green-light { background: #22c55e; color: white; }
+        .btn-yellow { background: #facc15; color: #0f172a; }
+        .btn-outline { background: white; border: 1.5px solid #cbd5e1; }
+        .btn-disabled { opacity: 0.45; pointer-events: none; }
+        
+        .link-box {
+            background: #f1f5f9;
+            border: 1px solid #d1d9e6;
+            border-radius: 60px;
+            padding: 0.8rem 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .link-box a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+            word-break: break-all;
+            font-size: 0.9rem;
+        }
+        .code-box {
+            border: 1px solid #dde3ea;
+            border-radius: 24px;
+            overflow: hidden;
+        }
+        .code-box textarea {
+            width: 100%;
+            min-height: 250px;
+            border: none;
+            padding: 1.2rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            resize: vertical;
+            outline: none;
+        }
+        .upload-box {
+            border: 2px dashed #cbd5e1;
+            border-radius: 32px;
+            padding: 1.5rem;
+            text-align: center;
+            background: #f8fafc;
+            cursor: pointer;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(3px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+        .modal-card {
+            background: white;
+            border-radius: 40px;
+            padding: 1.8rem;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            border: 1px solid #e2e8f0;
+        }
+        .modal-card input, .modal-card select {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 40px;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        input[type="tel"] {
+            -moz-appearance: textfield;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+        .auth-error {
+            color: #ef4444;
+            font-size: 0.8rem;
+            margin: 0.3rem 0 0.5rem;
+            display: none;
+        }
+        
+        /* Preview Overlay */
+        .preview-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: white;
+            z-index: 2000;
+            flex-direction: column;
+        }
+        .preview-bar {
+            background: #f1f5f9;
+            padding: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .preview-frame {
+            width: 100%;
+            flex: 1;
+            border: none;
+        }
+        .close-btn {
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 40px;
+            padding: 0.4rem 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="top-header">
+        <div class="logo-area">
+            <div class="logo"><i class="fas fa-cubes"></i> Web Bazar</div>
+            <div class="file-trigger" onclick="toggleFileBrowser()">
+                <i class="fas fa-folder-open"></i> Files
+            </div>
+        </div>
+        <div class="auth-section" id="authSection"></div>
+    </div>
+
+    <!-- Main App -->
+    <div class="app-main">
+        <!-- Left File Browser -->
+        <div class="browser-panel" id="fileBrowserPanel" style="display: none;">
+            <div class="panel-header">
+                <h4><i class="fas fa-folder"></i> আপনার ফাইল</h4>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="fileSearchInput" placeholder="ফাইল খুঁজুন...">
+                </div>
+                <button class="btn btn-green-light" style="width:100%; margin-top:5px;" onclick="openModal('newFileModal')"><i class="fas fa-plus"></i> নতুন ফাইল</button>
+            </div>
+            <div class="file-list" id="fileListContainer"></div>
+        </div>
+
+        <!-- Right Workspace -->
+        <div class="project-workspace">
+            <!-- Open File Area -->
+            <div class="file-selector-area" id="fileSelectorArea" style="display: none;">
+                <select id="openFileSelect" style="width:100%; padding:0.8rem; border-radius:40px; border:1px solid #cbd5e1; margin-bottom:0.8rem;" onchange="loadProjectsForSelectedFile()">
+                    <option value="">-- ফাইল নির্বাচন করুন --</option>
+                </select>
+                <div id="projectsListContainer" class="project-grid" style="max-height:150px;">
+                    <!-- প্রজেক্ট লিস্ট এখানে আসবে -->
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-bar">
+                <button class="big-btn" onclick="showFileSelector()"><i class="fas fa-folder-open"></i> Open File</button>
+                <button class="big-btn big-btn-primary" onclick="openNewProjectModal()"><i class="fas fa-plus-circle"></i> New Project</button>
+            </div>
+
+            <!-- Editor Panel -->
+            <div id="editorPanel" style="display: none;" class="editor-panel">
+                <div class="button-row">
+                    <button class="btn btn-green-light" id="deployBtn" onclick="handleDeploy()"><i class="fas fa-upload"></i> আপলোড</button>
+                    <button class="btn btn-yellow btn-disabled" id="checkBtn" onclick="launchPreview()"><i class="fas fa-play"></i> চেক</button>
+                </div>
+
+                <div class="toggle-buttons">
+                    <button class="toggle-btn active" id="codeToggleBtn" onclick="switchToCode()"><i class="fas fa-code"></i> কোড লেখা</button>
+                    <button class="toggle-btn" id="fileToggleBtn" onclick="switchToUpload()"><i class="fas fa-file-upload"></i> ফাইল আপলোড</button>
+                </div>
+
+                <!-- লিংক বক্স -->
+                <div class="link-box" id="linkBox" style="display: none;">
+                    <a href="#" id="liveLink" target="_blank">https://wbz-pro9.netlify.app/</a>
+                    <i class="fas fa-pen" onclick="openEditLinkModal()"></i>
+                </div>
+
+                <div id="codeBoxContainer">
+                    <div class="code-box">
+                        <textarea id="codeEditor" placeholder="আপনার HTML কোড লিখুন..."></textarea>
+                    </div>
+                </div>
+
+                <div id="uploadBoxContainer" style="display: none;">
+                    <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-cloud-upload-alt" style="font-size:32px; color:#2563eb;"></i>
+                        <p>HTML ফাইল নির্বাচন করুন</p>
+                        <input type="file" id="fileInput" accept=".html,.htm" style="display:none;" onchange="handleFileSelect(event)">
+                    </div>
+                </div>
+            </div>
+
+            <div id="noSelectionMessage" style="display: flex; align-items: center; justify-content: center; color:#94a3b8; padding:2rem;">
+                <i class="fas fa-folder-open" style="font-size:48px;"></i> <span style="margin-left:1rem;">একটি ফাইল বা প্রজেক্ট নির্বাচন করুন</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3><i class="fas fa-sign-in-alt"></i> লগইন</h3>
+            <input type="tel" id="loginMobile" placeholder="মোবাইল নাম্বার" inputmode="numeric" pattern="[0-9]*">
+            <input type="password" id="loginPassword" placeholder="পাসওয়ার্ড">
+            <div class="auth-error" id="loginError">ভুল মোবাইল বা পাসওয়ার্ড</div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('loginModal')">বাতিল</button>
+                <button class="btn btn-green-light" onclick="handleLogin()">লগইন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3><i class="fas fa-user-plus"></i> সাইন আপ</h3>
+            <input type="tel" id="signupMobile" placeholder="মোবাইল নাম্বার" inputmode="numeric" pattern="[0-9]*">
+            <input type="text" id="signupName" placeholder="আপনার নাম">
+            <input type="password" id="signupPassword" placeholder="পাসওয়ার্ড">
+            <div class="auth-error" id="signupError">মোবাইল নম্বর আগেই ব্যবহৃত</div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('signupModal')">বাতিল</button>
+                <button class="btn btn-green-light" onclick="handleSignup()">সাইন আপ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New File Modal (No password) -->
+    <div id="newFileModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3><i class="fas fa-file"></i> নতুন ফাইল</h3>
+            <input type="text" id="newFileName" placeholder="ফাইলের নাম">
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('newFileModal')">বাতিল</button>
+                <button class="btn btn-green-light" onclick="createNewFile()">তৈরি</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Project Modal (No password) -->
+    <div id="newProjectModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3><i class="fas fa-plus"></i> নতুন প্রজেক্ট</h3>
+            <select id="projectFileSelect"></select>
+            <input type="text" id="newProjName" placeholder="প্রজেক্টের নাম">
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('newProjectModal')">বাতিল</button>
+                <button class="btn btn-green-light" onclick="createNewProject()">তৈরি</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit URL Modal -->
+    <div id="editUrlModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3>কাস্টমাইজ ইউআরএল</h3>
+            <input type="text" id="customUrlInput" placeholder="your-custom-path">
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('editUrlModal')">বাতিল</button>
+                <button class="btn btn-yellow" onclick="saveCustomUrl()">সেভ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Overlay -->
+    <div id="previewOverlay" class="preview-overlay">
+        <div class="preview-bar">
+            <span><i class="fas fa-eye"></i> প্রিভিউ</span>
+            <button class="close-btn" onclick="closePreview()"><i class="fas fa-arrow-left"></i> ব্যাক</button>
+        </div>
+        <iframe id="previewFrame" class="preview-frame"></iframe>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, query, where, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB9tk1kwzXeRb_i4HfU-en_wZXI4fi7bZ0",
+            authDomain: "web-bazar-b1fa0.firebaseapp.com",
+            projectId: "web-bazar-b1fa0",
+            storageBucket: "web-bazar-b1fa0.firebasestorage.app",
+            messagingSenderId: "740882984982",
+            appId: "1:740882984982:web:c97108ef7b5306d8b9c537"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        window.db = db;
+
+        // State
+        let currentUser = null;
+        let currentFileId = null;
+        let currentProjectId = null;
+        let currentProjectData = null;
+        const baseDomain = "https://wbz-pro9.netlify.app/";
+
+        // UI Helpers
+        window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+        window.openModal = (id) => document.getElementById(id).style.display = 'flex';
+
+        // Toggle functions
+        window.switchToCode = () => {
+            document.getElementById('codeToggleBtn').classList.add('active');
+            document.getElementById('fileToggleBtn').classList.remove('active');
+            document.getElementById('codeBoxContainer').style.display = 'block';
+            document.getElementById('uploadBoxContainer').style.display = 'none';
+        };
+        window.switchToUpload = () => {
+            document.getElementById('fileToggleBtn').classList.add('active');
+            document.getElementById('codeToggleBtn').classList.remove('active');
+            document.getElementById('codeBoxContainer').style.display = 'none';
+            document.getElementById('uploadBoxContainer').style.display = 'block';
+        };
+
+        // অটো-লগইন চেক করুন
+        async function checkAutoLogin() {
+            const savedUser = localStorage.getItem('webBazarUser');
+            if (savedUser) {
+                try {
+                    const user = JSON.parse(savedUser);
+                    // যাচাই করি ইউজার এখনও আছে কিনা
+                    const q = query(collection(db, "users"), where("mobile", "==", user.mobile), where("password", "==", user.password));
+                    const snap = await getDocs(q);
+                    if (!snap.empty) {
+                        snap.forEach(d => {
+                            currentUser = { id: d.id, ...d.data() };
+                        });
+                        updateAuthUI();
+                    } else {
+                        localStorage.removeItem('webBazarUser');
+                    }
+                } catch (e) {
+                    localStorage.removeItem('webBazarUser');
+                }
+            }
+        }
+
+        // Update Auth UI
+        function updateAuthUI() {
+            const section = document.getElementById('authSection');
+            if (currentUser) {
+                section.innerHTML = `<div class="user-profile"><i class="fas fa-user-circle"></i> ${currentUser.name} <button class="logout-btn" onclick="logout()">Logout</button></div>`;
+            } else {
+                section.innerHTML = `<button class="auth-btn login-btn" onclick="openModal('loginModal')">Login</button><button class="auth-btn signup-btn" onclick="openModal('signupModal')">Signup</button>`;
+            }
+        }
+
+        window.logout = () => {
+            currentUser = null;
+            localStorage.removeItem('webBazarUser');
+            updateAuthUI();
+            currentFileId = null; currentProjectId = null;
+            document.getElementById('editorPanel').style.display = 'none';
+            document.getElementById('noSelectionMessage').style.display = 'flex';
+            document.getElementById('fileBrowserPanel').style.display = 'none';
+            document.getElementById('fileSelectorArea').style.display = 'none';
+        };
+
+        // Auth Handlers
+        window.handleSignup = async () => {
+            const mobile = document.getElementById('signupMobile').value.trim();
+            const name = document.getElementById('signupName').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            if (!mobile || !name || !password) return alert('সব ঘর পূরণ করুন');
+            const q = query(collection(db, "users"), where("mobile", "==", mobile));
+            const snap = await getDocs(q);
+            if (!snap.empty) {
+                document.getElementById('signupError').style.display = 'block';
+                return;
+            }
+            await addDoc(collection(db, "users"), { mobile, name, password });
+            alert('সাইন আপ সফল! এখন লগইন করুন');
+            closeModal('signupModal');
+            document.getElementById('signupError').style.display = 'none';
+        };
+
+        window.handleLogin = async () => {
+            const mobile = document.getElementById('loginMobile').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const q = query(collection(db, "users"), where("mobile", "==", mobile), where("password", "==", password));
+            const snap = await getDocs(q);
+            if (snap.empty) {
+                document.getElementById('loginError').style.display = 'block';
+                return;
+            }
+            let userData;
+            snap.forEach(d => userData = { id: d.id, ...d.data() });
+            currentUser = userData;
+            // লোকাল স্টোরেজে সেভ করি
+            localStorage.setItem('webBazarUser', JSON.stringify({ mobile: userData.mobile, password: userData.password }));
+            document.getElementById('loginError').style.display = 'none';
+            closeModal('loginModal');
+            updateAuthUI();
+            loadFileSelector();
+        };
+
+        // File Browser
+        window.toggleFileBrowser = () => {
+            if (!currentUser) return alert('প্রথমে লগইন করুন');
+            const panel = document.getElementById('fileBrowserPanel');
+            panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
+            if (panel.style.display === 'flex') loadFileList();
+        };
+
+        window.loadFileList = async () => {
+            if (!currentUser) return;
+            const container = document.getElementById('fileListContainer');
+            const snap = await getDocs(collection(db, "files"));
+            container.innerHTML = '';
+            snap.forEach(doc => {
+                const f = doc.data();
+                container.innerHTML += `<div class="file-item" onclick="selectFileFromBrowser('${doc.id}')"><div class="file-name"><i class="fas fa-file-alt"></i> ${f.name}</div><span class="project-count">${f.projectCount || 0}</span></div>`;
+            });
+        };
+
+        window.selectFileFromBrowser = async (fileId) => {
+            if (!currentUser) return;
+            await loadProjectsForFile(fileId);
+            document.getElementById('fileSelectorArea').style.display = 'block';
+            // ড্রপডাউন আপডেট
+            await loadFileSelector();
+            document.getElementById('openFileSelect').value = fileId;
+        };
+
+        async function loadFileSelector() {
+            const select = document.getElementById('openFileSelect');
+            select.innerHTML = '<option value="">-- ফাইল নির্বাচন করুন --</option>';
+            const snap = await getDocs(collection(db, "files"));
+            snap.forEach(d => {
+                select.innerHTML += `<option value="${d.id}">${d.data().name}</option>`;
+            });
+        }
+
+        window.showFileSelector = async () => {
+            if (!currentUser) return alert('লগইন করুন');
+            document.getElementById('fileSelectorArea').style.display = 'block';
+            await loadFileSelector();
+        };
+
+        window.loadProjectsForSelectedFile = async () => {
+            const fileId = document.getElementById('openFileSelect').value;
+            if (!fileId) return;
+            await loadProjectsForFile(fileId);
+        };
+
+        async function loadProjectsForFile(fileId) {
+            currentFileId = fileId;
+            const q = query(collection(db, "projects"), where("parentFileId", "==", fileId));
+            const projSnap = await getDocs(q);
+            const container = document.getElementById('projectsListContainer');
+            container.innerHTML = '';
+            projSnap.forEach(p => {
+                container.innerHTML += `<div class="project-card" onclick="selectProject('${p.id}')"><span class="proj-name">${p.data().name}</span></div>`;
+            });
+            if (projSnap.empty) container.innerHTML = '<div style="color:#64748b;">কোন প্রজেক্ট নেই</div>';
+        }
+
+        window.selectProject = async (projId) => {
+            const ref = doc(db, "projects", projId);
+            const snap = await getDoc(ref);
+            if (snap.exists()) {
+                currentProjectId = projId;
+                currentProjectData = snap.data();
+                document.getElementById('editorPanel').style.display = 'flex';
+                document.getElementById('noSelectionMessage').style.display = 'none';
+                document.getElementById('codeEditor').value = snap.data().code || '';
+                switchToCode();
+                
+                // চেক বাটন সক্রিয় যদি কোড থাকে
+                if (snap.data().code && snap.data().code.length > 0) {
+                    document.getElementById('checkBtn').classList.remove('btn-disabled');
+                } else {
+                    document.getElementById('checkBtn').classList.add('btn-disabled');
+                }
+                
+                // লিংক বক্স আপডেট - ডিপ্লয় করা থাকলে দেখাব
+                if (snap.data().deployed) {
+                    document.getElementById('linkBox').style.display = 'flex';
+                    const link = baseDomain + 'view.html?id=' + projId;
+                    document.getElementById('liveLink').innerText = link;
+                    document.getElementById('liveLink').href = '#';
+                    document.getElementById('liveLink').onclick = (e) => {
+                        e.preventDefault();
+                        openPureView(projId);
+                    };
+                } else {
+                    document.getElementById('linkBox').style.display = 'none';
+                }
+            }
+        };
+
+        // পিওর ভিউ ফাংশন - ব্যাক বাটন ছাড়া
+        function openPureView(projId) {
+            if (!currentProjectData) return;
+            const newWindow = window.open('', '_blank');
+            newWindow.document.write(currentProjectData.code);
+            newWindow.document.close();
+        }
+
+        window.openNewProjectModal = async () => {
+            if (!currentUser) return alert('লগইন করুন');
+            const select = document.getElementById('projectFileSelect');
+            select.innerHTML = '<option value="">-- ফাইল সিলেক্ট করুন --</option>';
+            const snap = await getDocs(collection(db, "files"));
+            snap.forEach(d => {
+                select.innerHTML += `<option value="${d.id}">${d.data().name}</option>`;
+            });
+            openModal('newProjectModal');
+        };
+
+        window.createNewProject = async () => {
+            const fileId = document.getElementById('projectFileSelect').value;
+            const projName = document.getElementById('newProjName').value;
+            if (!fileId || !projName) return alert('সব ঘর পূরণ করুন');
+            
+            // ইউনিক চেক
+            const q = query(collection(db, "projects"), where("parentFileId", "==", fileId), where("name", "==", projName));
+            const snap = await getDocs(q);
+            if (!snap.empty) return alert('এই ফাইলে প্রজেক্ট নাম আগেই আছে');
+            
+            const newProj = {
+                parentFileId: fileId,
+                name: projName,
+                code: '<h1>আপনার নতুন প্রজেক্ট</h1>\n<p>এখানে আপনার HTML কোড লিখুন</p>',
+                customUrl: projName,
+                deployed: false
+            };
+            const docRef = await addDoc(collection(db, "projects"), newProj);
+            
+            // projectCount আপডেট
+            const fileRef = doc(db, "files", fileId);
+            const fileSnap = await getDoc(fileRef);
+            await updateDoc(fileRef, { projectCount: (fileSnap.data().projectCount || 0) + 1 });
+            
+            alert('প্রজেক্ট তৈরি');
+            closeModal('newProjectModal');
+            await loadProjectsForFile(fileId);
+        };
+
+        window.createNewFile = async () => {
+            if (!currentUser) return alert('লগইন করুন');
+            const name = document.getElementById('newFileName').value;
+            if (!name) return alert('নাম দিন');
+            const q = query(collection(db, "files"), where("name", "==", name));
+            const snap = await getDocs(q);
+            if (!snap.empty) return alert('ফাইলের নাম আগেই আছে');
+            await addDoc(collection(db, "files"), { name, projectCount: 0 });
+            alert('ফাইল তৈরি');
+            closeModal('newFileModal');
+            loadFileList();
+            loadFileSelector();
+        };
+
+        window.handleDeploy = async () => {
+            if (!currentProjectId) return;
+            const code = document.getElementById('codeEditor').value;
+            await updateDoc(doc(db, "projects", currentProjectId), { code, deployed: true });
+            document.getElementById('checkBtn').classList.remove('btn-disabled');
+            document.getElementById('linkBox').style.display = 'flex';
+            const link = baseDomain + 'view.html?id=' + currentProjectId;
+            document.getElementById('liveLink').innerText = link;
+            document.getElementById('liveLink').href = '#';
+            document.getElementById('liveLink').onclick = (e) => {
+                e.preventDefault();
+                openPureView(currentProjectId);
+            };
+            alert('আপলোড সফল!');
+        };
+
+        window.launchPreview = () => {
+            if (document.getElementById('checkBtn').classList.contains('btn-disabled')) return;
+            if (!currentProjectData) return;
+            const code = document.getElementById('codeEditor').value;
+            document.getElementById('previewFrame').srcdoc = code;
+            document.getElementById('previewOverlay').style.display = 'flex';
+        };
+        window.closePreview = () => document.getElementById('previewOverlay').style.display = 'none';
+        
+        window.handleFileSelect = (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                document.getElementById('codeEditor').value = ev.target.result;
+                document.getElementById('checkBtn').classList.add('btn-disabled');
+                switchToCode();
+            };
+            reader.readAsText(file);
+        };
+        
+        window.openEditLinkModal = () => openModal('editUrlModal');
+        window.saveCustomUrl = async () => {
+            if (!currentProjectId) return;
+            const newUrl = document.getElementById('customUrlInput').value.trim();
+            if (!newUrl) return;
+            await updateDoc(doc(db, "projects", currentProjectId), { customUrl: newUrl });
+            alert('কাস্টম ইউআরএল সংরক্ষিত');
+            closeModal('editUrlModal');
+        };
+
+        // ইনিশিয়ালাইজ - অটো-লগইন চেষ্টা
+        checkAutoLogin().then(() => {
+            updateAuthUI();
+        });
+    </script>
+    <script>
+        window.openModal = (id) => document.getElementById(id).style.display = 'flex';
+        window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+    </script>
+</body>
+</html>
